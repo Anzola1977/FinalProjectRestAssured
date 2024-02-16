@@ -1,16 +1,16 @@
-import Utils.GorestApiWrappers;
-import Utils.GorestDataHelper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.example.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import utils.GorestApiWrappers;
+import utils.GorestDataHelper;
 
-import static Utils.GorestApiWrappers.sendGetRequest;
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static utils.GorestApiWrappers.sendGetRequest;
 
 public class GorestTests extends BaseTest{
 
@@ -20,7 +20,7 @@ public class GorestTests extends BaseTest{
     }
 
     @Test
-    public void getRequestTest() {
+    public void getDataUsersTest() {
         given()
                 .when()
                 .get("/users")
@@ -33,7 +33,7 @@ public class GorestTests extends BaseTest{
 
     @Test
     public void schemeValidationTest() {
-        int user_id = 6371363;
+        int user_id = 6446064;
         given()
                 .pathParam("id", user_id)
                 .when()
@@ -47,23 +47,16 @@ public class GorestTests extends BaseTest{
     }
 
     @Test
-    public void validateListOfAllObjects() {
+    public void schemeValidationWithPath() {
         sendGetRequest(getConfig("objectIdPath"))
                 .assertThat()
                 .body(matchesJsonSchemaInClasspath("gorest_user_scheme.json"));
     }
 
     @Test
-    public void entityPostRequestImprovedTest() {
-        UserData gadgetPost = GorestDataHelper.createSampleGadgetPost();
-        // или
-        gadgetPost.setName("BLA-BLA");
-        // или
-        //GadgetPost gadgetPost = TestDataHelper.createSampleGadgetPost("Bla-bla-bla");
-
-        UserData actualResponse =
-                GorestApiWrappers.sendPostRequest(getConfig("objectPath"), gadgetPost);
-
-        assertEquals(actualResponse, gadgetPost);
+    public void userCreatedTest() {
+        UserData userData = GorestDataHelper.createUserData();
+        UserData actualResponse = GorestApiWrappers.sendPostRequest(getConfig("objectPath"), userData);
+        assertEquals(actualResponse, userData);
     }
 }
