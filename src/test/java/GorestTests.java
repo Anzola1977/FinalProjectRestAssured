@@ -3,20 +3,22 @@ import io.restassured.http.ContentType;
 import org.example.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import utils.GorestApiWrappers;
-import utils.GorestDataHelper;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static utils.GorestApiWrappers.sendGetRequest;
+
 
 public class GorestTests extends BaseTest{
+
+    GorestApiWrappers gorestApiWrappers;
+    GorestDataHelper gorestDataHelper;
 
     @BeforeEach
     public void setUp() {
         RestAssured.baseURI = getConfig("baseURI");
+        //RestAssured.filters(new GlobalTokenFilter(getConfig("token")));
     }
 
     @Test
@@ -33,7 +35,7 @@ public class GorestTests extends BaseTest{
 
     @Test
     public void schemeValidationTest() {
-        int user_id = 6446064;
+        int user_id = 6446047;
         given()
                 .pathParam("id", user_id)
                 .when()
@@ -48,7 +50,7 @@ public class GorestTests extends BaseTest{
 
     @Test
     public void schemeValidationWithPath() {
-        sendGetRequest(getConfig("objectIdPath"))
+        GorestApiWrappers.sendGetRequest(getConfig("objectIdPath"))
                 .assertThat()
                 .body(matchesJsonSchemaInClasspath("gorest_user_scheme.json"));
     }
@@ -57,6 +59,6 @@ public class GorestTests extends BaseTest{
     public void userCreatedTest() {
         UserData userData = GorestDataHelper.createUserData();
         UserData actualResponse = GorestApiWrappers.sendPostRequest(getConfig("objectPath"), userData);
-        assertEquals(actualResponse, userData);
+        assertEquals(userData, actualResponse);
     }
 }

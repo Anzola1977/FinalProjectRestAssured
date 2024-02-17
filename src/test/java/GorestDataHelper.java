@@ -1,5 +1,3 @@
-package utils;
-
 import com.github.javafaker.Faker;
 import org.example.UserData;
 
@@ -15,8 +13,4 @@ public class GorestDataHelper {
         userData.setStatus("active");
         return userData;
     }
-
-//    public static UserData createUserData() {
-//        return createUserData("Jack Nikolson");
-//    }
 }

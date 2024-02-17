@@ -1,5 +1,3 @@
-package utils;
-
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
@@ -7,13 +5,13 @@ import org.example.UserData;
 
 import static io.restassured.RestAssured.given;
 
-public class GorestApiWrappers {
+public class GorestApiWrappers extends BaseTest{
 
     private final static int DEFAULT_STATUS_CODE = 200;
 
     public static UserData sendPostRequest(String endpoint, UserData requestBody) {
         return given()
-                .auth().oauth2("token")
+                .filter(new GlobalTokenFilter(getConfig("token")))
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .when()

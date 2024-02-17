@@ -38,4 +38,19 @@ public class UserData {
     public int hashCode() {
         return Objects.hash(getName(), getEmail(), getGender(), getStatus());
     }
+
+    @Override
+    public String toString() {
+        return "UserData{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", gender='" + gender + '\'' +
+                ", status='" + status + '\'' +
+                ", postData=" + postData +
+                ", todosData=" + todosData +
+                ", updatedAt='" + updatedAt + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                '}';
+    }
 }
