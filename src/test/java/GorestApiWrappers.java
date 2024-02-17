@@ -5,20 +5,22 @@ import org.example.UserData;
 
 import static io.restassured.RestAssured.given;
 
-public class GorestApiWrappers extends BaseTest{
+public class GorestApiWrappers{
 
     private final static int DEFAULT_STATUS_CODE = 200;
 
     public static UserData sendPostRequest(String endpoint, UserData requestBody) {
         return given()
-                .filter(new GlobalTokenFilter(getConfig("token")))
+                .filter(new GlobalTokenFilter(BaseTest.getConfig("token")))
                 .contentType(ContentType.JSON)
                 .body(requestBody)
+                .log().all()
                 .when()
                 .post(endpoint)
                 .then()
+                .log().all()
                 .assertThat()
-                .statusCode(DEFAULT_STATUS_CODE)
+                .statusCode(201)
                 .contentType(ContentType.JSON)
                 .log().ifValidationFails()
                 .extract().as(UserData.class);
@@ -46,6 +48,4 @@ public class GorestApiWrappers extends BaseTest{
     public static ValidatableResponse sendGetRequest(String callPath){
         return sendGetRequest(given(), callPath, DEFAULT_STATUS_CODE);
     }
-
-
 }

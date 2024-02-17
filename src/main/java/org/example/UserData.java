@@ -18,14 +18,14 @@ public class UserData {
     private String gender;
     @Setter
     private String status;
-    @Setter
-    private PostData postData;
-    @Setter
-    private TodosData todosData;
-    @Setter
-    private String updatedAt;
-    @Setter
-    private String createdAt;
+//    @Setter
+//    private PostData postData;
+//    @Setter
+//    private TodosData todosData;
+//    @Setter
+//    private String updatedAt;
+//    @Setter
+//    private String createdAt;
 
     @Override
     public boolean equals(Object o) {
@@ -42,15 +42,10 @@ public class UserData {
     @Override
     public String toString() {
         return "UserData{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", gender='" + gender + '\'' +
                 ", status='" + status + '\'' +
-                ", postData=" + postData +
-                ", todosData=" + todosData +
-                ", updatedAt='" + updatedAt + '\'' +
-                ", createdAt='" + createdAt + '\'' +
                 '}';
     }
 }

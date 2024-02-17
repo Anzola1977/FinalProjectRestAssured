@@ -12,13 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GorestTests extends BaseTest{
 
-    GorestApiWrappers gorestApiWrappers;
-    GorestDataHelper gorestDataHelper;
-
     @BeforeEach
     public void setUp() {
         RestAssured.baseURI = getConfig("baseURI");
-        //RestAssured.filters(new GlobalTokenFilter(getConfig("token")));
     }
 
     @Test
@@ -35,7 +31,7 @@ public class GorestTests extends BaseTest{
 
     @Test
     public void schemeValidationTest() {
-        int user_id = 6446047;
+        int user_id = 6445993;
         given()
                 .pathParam("id", user_id)
                 .when()
@@ -45,7 +41,6 @@ public class GorestTests extends BaseTest{
                 .contentType(ContentType.JSON)
                 .log().all()
                 .body(matchesJsonSchemaInClasspath("gorest_user_scheme.json"));
-
     }
 
     @Test
