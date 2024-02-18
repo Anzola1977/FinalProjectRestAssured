@@ -1,6 +1,6 @@
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.example.UserData;
+import org.example.PostData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -9,8 +9,9 @@ import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInC
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+public class GorestPostTests extends BaseTest{
 
-public class GorestTests extends BaseTest{
+    public static int postID;
 
     @BeforeEach
     public void setUp() {
@@ -18,42 +19,41 @@ public class GorestTests extends BaseTest{
     }
 
     @Test
-    public void getDataUsersTest() {
+    public void getDataPostsTest() {
         given()
                 .when()
-                .get("/users")
+                .get("/posts")
                 .then().assertThat()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
                 .log().all()
-                .body("id", hasSize(10));
+                .body("$", hasSize(10));
     }
 
     @Test
-    public void schemeValidationTest() {
-        int user_id = 6445993;
-        given()
-                .pathParam("id", user_id)
+    public void getPostIDTest() {
+        postID = given()
                 .when()
-                .get("/users/{id}")
+                .get("/posts")
                 .then().assertThat()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
                 .log().all()
-                .body(matchesJsonSchemaInClasspath("gorest_user_scheme.json"));
+                .extract().jsonPath().getInt("[0]['id']");
+        System.out.println(postID);
     }
 
     @Test
     public void schemeValidationWithPath() {
-        GorestApiWrappers.sendGetRequest(getConfig("objectIdPath"))
+        GorestApiWrappers.sendGetRequest(getConfig("postIDPath"))
                 .assertThat()
-                .body(matchesJsonSchemaInClasspath("gorest_user_scheme.json"));
+                .body(matchesJsonSchemaInClasspath("gorest_posts_scheme.json"));
     }
 
     @Test
-    public void userCreatedTest() {
-        UserData userData = GorestDataHelper.createUserData();
-        UserData actualResponse = GorestApiWrappers.sendPostRequest(getConfig("objectPath"), userData);
-        assertEquals(userData, actualResponse);
+    public void postCreatedTest() {
+        PostData postData = GorestDataHelper.createPostData();
+        PostData actualResponse = GorestApiWrappers.sendPostRequest(getConfig("postsPath"), postData, PostData.class);
+        assertEquals(postData, actualResponse);
     }
 }

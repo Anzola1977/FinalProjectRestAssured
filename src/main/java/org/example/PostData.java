@@ -9,27 +9,32 @@ import java.util.Objects;
 public class PostData {
 
     private int id;
+    @Setter
     private int user_id;
     @Setter
     private String title;
     @Setter
     private String body;
-    @Setter
-    private CommentsData commentsData;
-    @Setter
-    private String updatedAt;
-    @Setter
-    private String createdAt;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof PostData postData)) return false;
-        return Objects.equals(getTitle(), postData.getTitle()) && Objects.equals(getBody(), postData.getBody());
+        return getUser_id() == postData.getUser_id() && Objects.equals(getTitle(), postData.getTitle()) && Objects.equals(getBody(), postData.getBody());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getTitle(), getBody());
+        return Objects.hash(getUser_id(), getTitle(), getBody());
+    }
+
+    @Override
+    public String toString() {
+        return "PostData{" +
+                "id=" + id +
+                ", user_id=" + user_id +
+                ", title='" + title + '\'' +
+                ", body='" + body + '\'' +
+                '}';
     }
 }

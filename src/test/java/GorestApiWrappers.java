@@ -9,7 +9,7 @@ public class GorestApiWrappers{
 
     private final static int DEFAULT_STATUS_CODE = 200;
 
-    public static UserData sendPostRequest(String endpoint, UserData requestBody) {
+    public static <T> T sendPostRequest(String endpoint, T requestBody, Class<T> response) {
         return given()
                 .filter(new GlobalTokenFilter(BaseTest.getConfig("token")))
                 .contentType(ContentType.JSON)
@@ -23,7 +23,7 @@ public class GorestApiWrappers{
                 .statusCode(201)
                 .contentType(ContentType.JSON)
                 .log().ifValidationFails()
-                .extract().as(UserData.class);
+                .extract().as(response);
     }
 
     public static ValidatableResponse sendGetRequest(RequestSpecification requestSpecification, String callPath, int statusCode){

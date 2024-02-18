@@ -5,7 +5,6 @@ import lombok.Setter;
 
 import java.util.Objects;
 
-
 @Getter
 public class UserData {
 
@@ -18,14 +17,6 @@ public class UserData {
     private String gender;
     @Setter
     private String status;
-//    @Setter
-//    private PostData postData;
-//    @Setter
-//    private TodosData todosData;
-//    @Setter
-//    private String updatedAt;
-//    @Setter
-//    private String createdAt;
 
     @Override
     public boolean equals(Object o) {
@@ -42,7 +33,8 @@ public class UserData {
     @Override
     public String toString() {
         return "UserData{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", gender='" + gender + '\'' +
                 ", status='" + status + '\'' +
