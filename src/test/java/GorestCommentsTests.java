@@ -1,5 +1,4 @@
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import org.example.CommentData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,36 +8,41 @@ import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInC
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class GorestCommentsTests extends BaseTest{
+public class GorestCommentsTests extends BaseTest {
+
+    public static int commentID;
 
     @BeforeEach
     public void setUp() {
         RestAssured.baseURI = getConfig("baseURI");
+        commentGetTest();
     }
 
     @Test
-    public void getDataPostsTest() {
-        given()
-                .when()
-                .get("/comments")
-                .then().assertThat()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .log().all()
-                .body("$", hasSize(10));
+    public void commentGetTest() {
+        commentID = GorestApiWrappers.sendGetRequest(
+                        getConfig("commentsPath"))
+                .assertThat()
+                .body("$", hasSize(10))
+                .extract().jsonPath().getInt("[0]['id']");
     }
 
     @Test
     public void schemeValidationWithPath() {
-        GorestApiWrappers.sendGetRequest(getConfig("commentIDPath"))
+        GorestApiWrappers.sendGetRequest(
+                        given().pathParam("id", commentID),
+                        getConfig("commentIDPath"))
                 .assertThat()
                 .body(matchesJsonSchemaInClasspath("gorest_comments_scheme.json"));
     }
 
     @Test
     public void commentCreatedTest() {
-        CommentData commentData = GorestDataHelper.createCommentData();
-        CommentData actualResponse = GorestApiWrappers.sendPostRequest(getConfig("commentsPath"), commentData, CommentData.class);
+        CommentData commentData = GorestPostDataHelper.createCommentData();
+        CommentData actualResponse = GorestApiWrappers.sendPostRequest(
+                getConfig("commentsPath"),
+                commentData,
+                CommentData.class);
         assertEquals(commentData, actualResponse);
     }
 }
