@@ -1,8 +1,12 @@
+package utils;
+
 import com.github.javafaker.Faker;
 import org.example.CommentData;
 import org.example.PostData;
 import org.example.TodoData;
 import org.example.UserData;
+import tests.GorestPostTests;
+import tests.GorestUsersTests;
 
 
 public class GorestPostDataHelper {

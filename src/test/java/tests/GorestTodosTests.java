@@ -1,7 +1,10 @@
+package tests;
+
 import io.restassured.RestAssured;
 import org.example.TodoData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import utils.*;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -16,7 +19,7 @@ public class GorestTodosTests extends BaseTest {
 
     @BeforeEach
     public void setUp() {
-        RestAssured.baseURI = getConfig("baseURI");
+        RestAssured.baseURI = BaseTest.getConfig("baseURI");
         todoGetTest();
         schemeValidationWithPath();
     }
@@ -24,7 +27,7 @@ public class GorestTodosTests extends BaseTest {
     @Test
     public void todoGetTest() {
         todoID = GorestApiWrappers.sendGetRequest(
-                        getConfig("todosPath"))
+                        BaseTest.getConfig("todosPath"))
                 .assertThat()
                 .body("$", hasSize(10))
                 .extract().jsonPath().getInt("[0]['id']");
@@ -34,7 +37,7 @@ public class GorestTodosTests extends BaseTest {
     public void schemeValidationWithPath() {
         todoData = GorestApiWrappers.sendGetRequest(
                         given().pathParam("id", todoID),
-                        getConfig("todoIDPath"))
+                        BaseTest.getConfig("todoIDPath"))
                 .assertThat()
                 .body(matchesJsonSchemaInClasspath("gorest_todos_scheme.json"))
                 .extract().as(TodoData.class);
@@ -44,7 +47,7 @@ public class GorestTodosTests extends BaseTest {
     public void todoCreatedTest() {
         TodoData todoData = GorestPostDataHelper.createTodoData();
         TodoData actualResponse = GorestApiWrappers.sendPostRequest(
-                getConfig("todosPath"),
+                BaseTest.getConfig("todosPath"),
                 todoData,
                 TodoData.class);
         assertEquals(todoData, actualResponse);
@@ -56,7 +59,7 @@ public class GorestTodosTests extends BaseTest {
         todoData = GorestPutDataHelper.updateTodoData();
         TodoData actualResponse = GorestApiWrappers.sendPutRequest(
                 given().pathParam("id", todoID),
-                getConfig("todoIDPath"),
+                BaseTest.getConfig("todoIDPath"),
                 todoData,
                 TodoData.class);
         assertEquals(todoData, actualResponse);
@@ -68,7 +71,7 @@ public class GorestTodosTests extends BaseTest {
         todoData = GorestPatchDataHelper.patchTodoData();
         TodoData actualResponse = GorestApiWrappers.sendPatchRequest(
                 given().pathParam("id", todoID),
-                getConfig("todoIDPath"),
+                BaseTest.getConfig("todoIDPath"),
                 todoData,
                 TodoData.class);
         assertEquals(todoData, actualResponse);
@@ -79,15 +82,15 @@ public class GorestTodosTests extends BaseTest {
         System.out.println(todoData);
         GorestApiWrappers.sendDeleteRequest(
                 given().pathParam("id", todoID),
-                getConfig("todoIDPath"));
+                BaseTest.getConfig("todoIDPath"));
         GorestApiWrappers.sendGetRequest(
                         given().pathParam("id", todoID),
-                        getConfig("todoIDPath"),
+                        BaseTest.getConfig("todoIDPath"),
                         404)
                 .assertThat()
                 .body("message", equalTo("Resource not found"));
         GorestApiWrappers.sendGetRequest(
-                        getConfig("todosPath"))
+                        BaseTest.getConfig("todosPath"))
                 .assertThat()
                 .body("$", hasSize(10));
     }

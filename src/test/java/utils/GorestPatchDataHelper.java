@@ -1,8 +1,14 @@
+package utils;
+
 import com.github.javafaker.Faker;
 import org.example.CommentData;
 import org.example.PostData;
 import org.example.TodoData;
 import org.example.UserData;
+import tests.GorestCommentsTests;
+import tests.GorestPostTests;
+import tests.GorestTodosTests;
+import tests.GorestUsersTests;
 
 public class GorestPatchDataHelper {
 

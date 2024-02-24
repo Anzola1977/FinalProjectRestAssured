@@ -1,7 +1,10 @@
+package tests;
+
 import io.restassured.RestAssured;
 import org.example.CommentData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import utils.*;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
@@ -16,7 +19,7 @@ public class GorestCommentsTests extends BaseTest {
 
     @BeforeEach
     public void setUp() {
-        RestAssured.baseURI = getConfig("baseURI");
+        RestAssured.baseURI = BaseTest.getConfig("baseURI");
         commentGetTest();
         schemeValidationWithPath();
     }
@@ -24,7 +27,7 @@ public class GorestCommentsTests extends BaseTest {
     @Test
     public void commentGetTest() {
         commentID = GorestApiWrappers.sendGetRequest(
-                        getConfig("commentsPath"))
+                        BaseTest.getConfig("commentsPath"))
                 .assertThat()
                 .body("$", hasSize(10))
                 .extract().jsonPath().getInt("[0]['id']");
@@ -34,7 +37,7 @@ public class GorestCommentsTests extends BaseTest {
     public void schemeValidationWithPath() {
         commentData = GorestApiWrappers.sendGetRequest(
                         given().pathParam("id", commentID),
-                        getConfig("commentIDPath"))
+                        BaseTest.getConfig("commentIDPath"))
                 .assertThat()
                 .body(matchesJsonSchemaInClasspath("gorest_comments_scheme.json"))
                 .extract().as(CommentData.class);
@@ -44,7 +47,7 @@ public class GorestCommentsTests extends BaseTest {
     public void commentCreatedTest() {
         CommentData commentData = GorestPostDataHelper.createCommentData();
         CommentData actualResponse = GorestApiWrappers.sendPostRequest(
-                getConfig("commentsPath"),
+                BaseTest.getConfig("commentsPath"),
                 commentData,
                 CommentData.class);
         assertEquals(commentData, actualResponse);
@@ -56,7 +59,7 @@ public class GorestCommentsTests extends BaseTest {
         commentData = GorestPutDataHelper.updateCommentData();
         CommentData actualResponse = GorestApiWrappers.sendPutRequest(
                 given().pathParam("id", commentID),
-                getConfig("commentIDPath"),
+                BaseTest.getConfig("commentIDPath"),
                 commentData,
                 CommentData.class);
         assertEquals(commentData, actualResponse);
@@ -68,7 +71,7 @@ public class GorestCommentsTests extends BaseTest {
         commentData = GorestPatchDataHelper.patchCommentData();
         CommentData actualResponse = GorestApiWrappers.sendPatchRequest(
                 given().pathParam("id", commentID),
-                getConfig("commentIDPath"),
+                BaseTest.getConfig("commentIDPath"),
                 commentData,
                 CommentData.class);
         assertEquals(commentData, actualResponse);
@@ -79,15 +82,15 @@ public class GorestCommentsTests extends BaseTest {
         System.out.println(commentData);
         GorestApiWrappers.sendDeleteRequest(
                 given().pathParam("id", commentID),
-                getConfig("commentIDPath"));
+                BaseTest.getConfig("commentIDPath"));
         GorestApiWrappers.sendGetRequest(
                         given().pathParam("id", commentID),
-                        getConfig("commentIDPath"),
+                        BaseTest.getConfig("commentIDPath"),
                         404)
                 .assertThat()
                 .body("message", equalTo("Resource not found"));
         GorestApiWrappers.sendGetRequest(
-                        getConfig("commentsPath"))
+                        BaseTest.getConfig("commentsPath"))
                 .assertThat()
                 .body("$", hasSize(10));
     }
