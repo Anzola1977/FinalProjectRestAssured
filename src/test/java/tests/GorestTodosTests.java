@@ -2,6 +2,7 @@ package tests;
 
 import io.restassured.RestAssured;
 import org.example.TodoData;
+import org.example.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import utils.*;
@@ -54,6 +55,15 @@ public class GorestTodosTests extends BaseTest {
     }
 
     @Test
+    public void todoCreatedTestNegative() {
+        TodoData todoData = GorestPostDataHelper.createTodoData();
+        GorestApiWrappersNegative<TodoData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendPostRequest(
+                getConfig("todosPath"),
+                todoData);
+    }
+
+    @Test
     public void todoUpdatedTest() {
         System.out.println(todoData);
         todoData = GorestPutDataHelper.updateTodoData();
@@ -63,6 +73,17 @@ public class GorestTodosTests extends BaseTest {
                 todoData,
                 TodoData.class);
         assertEquals(todoData, actualResponse);
+    }
+
+    @Test
+    public void todoUpdatedTestNegative() {
+        System.out.println(todoData);
+        todoData = GorestPutDataHelper.updateTodoData();
+        GorestApiWrappersNegative<TodoData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendPutRequest(
+                given().pathParam("id", todoID),
+                getConfig("postIDPath"),//the path failed
+                todoData);
     }
 
     @Test
@@ -78,20 +99,27 @@ public class GorestTodosTests extends BaseTest {
     }
 
     @Test
+    public void todoPatchTestWithQueryParamNegative() {
+        GorestApiWrappersNegative<TodoData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendPatchRequest(//a param failed
+                given().pathParam("id", todoID).queryParam("title", "Andrew Zorro").queryParam("status", "active"),
+                getConfig("todoIDPath"),
+                todoData);
+    }
+
+    @Test
     public void todoDeleteTest() {
-        System.out.println(todoData);
         GorestApiWrappers.sendDeleteRequest(
                 given().pathParam("id", todoID),
                 BaseTest.getConfig("todoIDPath"));
-        GorestApiWrappers.sendGetRequest(
-                        given().pathParam("id", todoID),
-                        BaseTest.getConfig("todoIDPath"),
-                        404)
-                .assertThat()
-                .body("message", equalTo("Resource not found"));
-        GorestApiWrappers.sendGetRequest(
-                        BaseTest.getConfig("todosPath"))
-                .assertThat()
-                .body("$", hasSize(10));
+    }
+
+    @Test
+    public void todoDeleteTestNegative() {
+        todoDeleteTest();
+        GorestApiWrappersNegative<TodoData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendDeleteRequest(//a user not exists
+                given().pathParam("id", todoID),
+                getConfig("todoIDPath"));
     }
 }

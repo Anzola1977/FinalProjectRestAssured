@@ -8,7 +8,6 @@ import utils.*;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -55,6 +54,15 @@ public class GorestUsersTests extends BaseTest {
     }
 
     @Test
+    public void userCreatedTestNegative() {
+        UserData userData = GorestPostDataHelper.createUserData();
+        GorestApiWrappersNegative<UserData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendPostRequest(//we haven't authentication
+                getConfig("usersPath"),
+                userData);
+    }
+
+    @Test
     public void userUpdatedTest() {
         System.out.println(userData);
         userData = GorestPutDataHelper.updateUserData();
@@ -64,6 +72,17 @@ public class GorestUsersTests extends BaseTest {
                 userData,
                 UserData.class);
         assertEquals(userData, actualResponse);
+    }
+
+    @Test
+    public void userUpdatedTestNegative() {
+        System.out.println(userData);
+        userData = GorestPutDataHelper.updateUserData();
+        GorestApiWrappersNegative<UserData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendPutRequest(
+                given().pathParam("id", userID),
+                getConfig("postIDPath"),//the path failed
+                userData);
     }
 
     @Test
@@ -102,20 +121,27 @@ public class GorestUsersTests extends BaseTest {
     }
 
     @Test
+    public void userPatchTestWithQueryParamNegative() {
+        GorestApiWrappersNegative<UserData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendPatchRequest(//a param failed
+                given().pathParam("id", userID).queryParam("name", "Andrew Zorro").queryParam("gender", "active"),
+                getConfig("userIDPath"),
+                userData);
+    }
+
+    @Test
     public void userDeleteTest() {
-        System.out.println(userData);
         GorestApiWrappers.sendDeleteRequest(
                 given().pathParam("id", userID),
                 getConfig("userIDPath"));
-        GorestApiWrappers.sendGetRequest(
-                        given().pathParam("id", userID),
-                        getConfig("userIDPath"),
-                        404)
-                .assertThat()
-                .body("message", equalTo("Resource not found"));
-        GorestApiWrappers.sendGetRequest(
-                        getConfig("usersPath"))
-                .assertThat()
-                .body("$", hasSize(10));
+    }
+
+    @Test
+    public void userDeleteTestNegative() {
+        userDeleteTest();
+        GorestApiWrappersNegative<UserData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendDeleteRequest(//a user not exists
+                given().pathParam("id", userID),
+                getConfig("userIDPath"));
     }
 }

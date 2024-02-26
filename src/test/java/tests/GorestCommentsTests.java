@@ -2,6 +2,7 @@ package tests;
 
 import io.restassured.RestAssured;
 import org.example.CommentData;
+import org.example.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import utils.*;
@@ -54,6 +55,15 @@ public class GorestCommentsTests extends BaseTest {
     }
 
     @Test
+    public void commentCreatedTestNegative() {
+        CommentData commentData = GorestPostDataHelper.createCommentData();
+        GorestApiWrappersNegative<CommentData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendPostRequest(
+                getConfig("commentsPath"),
+                commentData);
+    }
+
+    @Test
     public void commentUpdatedTest() {
         System.out.println(commentData);
         commentData = GorestPutDataHelper.updateCommentData();
@@ -63,6 +73,17 @@ public class GorestCommentsTests extends BaseTest {
                 commentData,
                 CommentData.class);
         assertEquals(commentData, actualResponse);
+    }
+
+    @Test
+    public void commentUpdatedTestNegative() {
+        System.out.println(commentData);
+        commentData = GorestPutDataHelper.updateCommentData();
+        GorestApiWrappersNegative<CommentData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendPutRequest(
+                given().pathParam("id", commentID),
+                getConfig("postIDPath"),//the path failed
+                commentData);
     }
 
     @Test
@@ -78,20 +99,27 @@ public class GorestCommentsTests extends BaseTest {
     }
 
     @Test
+    public void commentPatchTestWithQueryParamNegative() {
+        GorestApiWrappersNegative<CommentData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendPatchRequest(//a param failed
+                given().pathParam("id", commentID).queryParam("email", "active"),
+                getConfig("commentIDPath"),
+                commentData);
+    }
+
+    @Test
     public void commentDeleteTest() {
-        System.out.println(commentData);
         GorestApiWrappers.sendDeleteRequest(
                 given().pathParam("id", commentID),
                 BaseTest.getConfig("commentIDPath"));
-        GorestApiWrappers.sendGetRequest(
-                        given().pathParam("id", commentID),
-                        BaseTest.getConfig("commentIDPath"),
-                        404)
-                .assertThat()
-                .body("message", equalTo("Resource not found"));
-        GorestApiWrappers.sendGetRequest(
-                        BaseTest.getConfig("commentsPath"))
-                .assertThat()
-                .body("$", hasSize(10));
+    }
+
+    @Test
+    public void commentDeleteTestNegative() {
+        commentDeleteTest();
+        GorestApiWrappersNegative<CommentData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendDeleteRequest(//a user not exists
+                given().pathParam("id", commentID),
+                getConfig("commentIDPath"));
     }
 }

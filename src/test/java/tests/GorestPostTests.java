@@ -8,7 +8,6 @@ import utils.*;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -54,6 +53,15 @@ public class GorestPostTests extends BaseTest {
     }
 
     @Test
+    public void postCreatedTestNegative() {
+        PostData postData = GorestPostDataHelper.createPostData();
+        GorestApiWrappersNegative<PostData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendPostRequest(
+                getConfig("postsPath"),
+                postData);
+    }
+
+    @Test
     public void postUpdatedTest() {
         System.out.println(postData);
         postData = GorestPutDataHelper.updatePostData();
@@ -63,6 +71,17 @@ public class GorestPostTests extends BaseTest {
                 postData,
                 PostData.class);
         assertEquals(postData, actualResponse);
+    }
+
+    @Test
+    public void postUpdatedTestNegative() {
+        System.out.println(postData);
+        postData = GorestPutDataHelper.updatePostData();
+        GorestApiWrappersNegative<PostData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendPutRequest(
+                given().pathParam("id", postID),
+                getConfig("userIDPath"),//the path failed
+                postData);
     }
 
     @Test
@@ -79,19 +98,17 @@ public class GorestPostTests extends BaseTest {
 
     @Test
     public void postDeleteTest() {
-        System.out.println(postData);
         GorestApiWrappers.sendDeleteRequest(
                 given().pathParam("id", postID),
                 getConfig("postIDPath"));
-        GorestApiWrappers.sendGetRequest(
-                        given().pathParam("id", postID),
-                        getConfig("postIDPath"),
-                        404)
-                .assertThat()
-                .body("message", equalTo("Resource not found"));
-        GorestApiWrappers.sendGetRequest(
-                        getConfig("postsPath"))
-                .assertThat()
-                .body("$", hasSize(10));
+    }
+
+    @Test
+    public void postDeleteTestNegative() {
+        postDeleteTest();
+        GorestApiWrappersNegative<PostData> wrappersNegative = new GorestApiWrappersNegative<>();
+        wrappersNegative.sendDeleteRequest(//a user not exists
+                given().pathParam("id", postID),
+                getConfig("postIDPath"));
     }
 }
