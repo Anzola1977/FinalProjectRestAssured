@@ -2,7 +2,9 @@ package tests;
 
 import io.restassured.RestAssured;
 import org.example.PostData;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import utils.*;
 
@@ -16,15 +18,19 @@ public class GorestPostTests extends BaseTest {
     public static int postID;
     public static PostData postData;
 
-    @BeforeEach
-    public void setUp() {
-        RestAssured.baseURI = getConfig("baseURI");
+    @BeforeAll
+    @Order(2)
+    public static void tearUp() {
         postGetTest();
         schemeValidationWithPath();
     }
 
-    @Test
-    public void postGetTest() {
+    @BeforeEach
+    public void setUp() {
+        RestAssured.baseURI = getConfig("baseURI");
+    }
+
+    public static void postGetTest() {
         postID = GorestApiWrappers.sendGetRequest(
                         getConfig("postsPath"))
                 .assertThat()
@@ -32,8 +38,7 @@ public class GorestPostTests extends BaseTest {
                 .extract().jsonPath().getInt("[0]['id']");
     }
 
-    @Test
-    public void schemeValidationWithPath() {
+    public static void schemeValidationWithPath() {
         postData = GorestApiWrappers.sendGetRequest(
                         given().pathParam("id", postID),
                         getConfig("postIDPath"))
@@ -63,6 +68,7 @@ public class GorestPostTests extends BaseTest {
 
     @Test
     public void postUpdatedTest() {
+        postGetTest();
         System.out.println(postData);
         postData = GorestPutDataHelper.updatePostData();
         PostData actualResponse = GorestApiWrappers.sendPutRequest(
@@ -105,6 +111,7 @@ public class GorestPostTests extends BaseTest {
 
     @Test
     public void postDeleteTestNegative() {
+        postGetTest();
         postDeleteTest();
         GorestApiWrappersNegative<PostData> wrappersNegative = new GorestApiWrappersNegative<>();
         wrappersNegative.sendDeleteRequest(//a user not exists
