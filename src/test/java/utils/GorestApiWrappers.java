@@ -75,7 +75,7 @@ public class GorestApiWrappers{
                 .then()
                 .log().all()
                 .assertThat()
-                .statusCode(200)
+                .statusCode(DEFAULT_STATUS_CODE)
                 .contentType(ContentType.JSON)
                 .log().ifValidationFails()
                 .extract().as(response);

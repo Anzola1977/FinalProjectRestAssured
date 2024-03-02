@@ -22,7 +22,7 @@ public class GorestPostDataHelper {
     }
 
     public static PostData createPostData() {
-        new GorestUsersTests().userGetTest();
+        GorestUsersTests.userGetID();
         PostData postData = new PostData();
         Faker faker = new Faker();
         postData.setUser_id(GorestUsersTests.userID);
@@ -32,7 +32,7 @@ public class GorestPostDataHelper {
     }
 
     public static CommentData createCommentData() {
-        new GorestPostTests().postGetTest();
+        GorestPostTests.postGetID();
         CommentData commentData = new CommentData();
         Faker faker = new Faker();
         commentData.setPost_id(GorestPostTests.postID);
@@ -43,7 +43,7 @@ public class GorestPostDataHelper {
     }
 
     public static TodoData createTodoData() {
-        new GorestUsersTests().userGetTest();
+        GorestUsersTests.userGetID();
         TodoData todoData = new TodoData();
         todoData.setUser_id(GorestUsersTests.userID);
         todoData.setTitle(new Faker().book().title());
